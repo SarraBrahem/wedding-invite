@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yasser & Sarra — 18/04/2026</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <!-- SCREEN 1: ENVELOPE -->
+    <section class="screen screen--envelope" id="screen-envelope" aria-label="Invitation">
+        <div class="bg-grain"></div>
+
+        <div class="envelope-wrap">
+            <p class="kicker">Cette invitation est exclusive pour vous</p>
+
+            <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Ouvrir l’enveloppe">
+                <div class="env-back"></div>
+                <div class="env-flap" aria-hidden="true"></div>
+
+                <div class="env-front" aria-hidden="true">
+                    <div class="env-triangle-left"></div>
+                    <div class="env-triangle-right"></div>
+                    <div class="env-triangle-bottom"></div>
+                </div>
+
+                <div class="letter" id="letter" aria-hidden="true">
+                    <div class="letter-top">
+                        <div class="wax" aria-hidden="true">
+                            <span class="wax-mark">Y&S</span>
+                        </div>
+                    </div>
+
+                    <div class="letter-body">
+                        <h1 class="names">Yasser <span class="amp">&</span> Sarra</h1>
+                        <p class="date">18 • 04 • 2026</p>
+                        <p class="hint">Touchez le cachet pour découvrir l’invitation</p>
+                    </div>
+                </div>
+
+                <button class="seal" id="seal" type="button" aria-label="Ouvrir">
+            <span class="seal-inner">Y&S</span>
+          </button>
+            </div>
+
+            <p class="tap">Touchez le cachet</p>
+        </div>
+    </section>
+
+    <!-- SCREEN 2: MINI-SITE -->
+    <section class="screen screen--invite" id="screen-invite" aria-label="Invitation détaillée">
+        <div class="invite">
+            <nav class="mini-nav">
+                <a href="#details">Détails</a>
+                <a href="#lieu">Lieu</a>
+                <a href="#rsvp">RSVP</a>
+                <button class="mini-back" id="backBtn" type="button">←</button>
+            </nav>
+
+            <header class="hero2">
+                <p class="pill">Mariage</p>
+                <h2 class="invite-title">Yasser <span class="amp">&</span> Sarra</h2>
+                <p class="invite-sub">ont la joie de vous inviter à célébrer leur union</p>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <p class="label">Date</p>
+                        <p class="value">Samedi 18 avril 2026</p>
+                    </div>
+                    <div class="info-card">
+                        <p class="label">Lieu</p>
+                        <p class="value">Mairie d’Antony</p>
+                    </div>
+                </div>
+
+                <p class="small">Tenue : chic & bohème ✨</p>
+            </header>
+
+            <section id="details" class="block">
+                <h3 class="h3">Détails</h3>
+                <p class="text">Un “oui” simple, sincère, entouré de ceux que nous aimons.</p>
+                <ul class="list">
+                    <li><strong>Cérémonie civile :</strong> Mairie d’Antony</li>
+                    <li><strong>Date :</strong> 18/04/2026</li>
+                    <li><strong>Heure :</strong> à préciser</li>
+                    <li>Merci d’arriver 10–15 min en avance</li>
+                </ul>
+            </section>
+
+            <section id="lieu" class="block block-alt">
+                <h3 class="h3">Lieu</h3>
+                <p class="text muted">Mairie d’Antony, Antony (France)</p>
+
+                <div class="place-actions">
+                    <a class="btn" target="_blank" rel="noreferrer" href="https://www.google.com/maps/search/?api=1&query=Mairie%20d%27Antony">
+              Ouvrir dans Maps
+            </a>
+                </div>
+
+                <div class="mapBox">
+                    <iframe class="mapIframe" title="Carte — Mairie d’Antony" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Mairie%20d%27Antony&output=embed"></iframe>
+                </div>
+
+            </section>
+
+            <section id="rsvp" class="block">
+                <h3 class="h3">RSVP</h3>
+
+                <div class="rsvp-box">
+                    <p class="text muted">Merci de confirmer votre présence via notre formulaire.</p>
+
+                    <a class="btn btn-primary" target="_blank" rel="noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSczHul4dRWJ5Z2l0PjHw23alUOAzcU_8_aKYf_8N7-IINPaqA/viewform?usp=header">
+              Confirmer votre présence
+            </a>
+
+                    <p class="small muted" style="margin-top: 10px;">
+                        Si le bouton ne s’ouvre pas, copiez ce lien :
+                        <span class="link-plain">docs.google.com/forms/…</span>
+                    </p>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <p class="muted">© Yasser & Sarra — 18/04/2026</p>
+            </footer>
+        </div>
+    </section>
+
+    <!-- YouTube audio background (hidden) -->
+    <div class="yt-audio" aria-hidden="true">
+        <iframe id="ytAudio" title="Musique mariage" src="" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+
+    <button class="music-floating" id="musicToggle" type="button" aria-pressed="false">
+			🔇 Muet
+		</button>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
