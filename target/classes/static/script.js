@@ -6,7 +6,6 @@ const screenInvite = document.getElementById("screen-invite");
 const backBtn = document.getElementById("backBtn");
 
 const ytAudio = document.getElementById("ytAudio");
-const musicToggle = document.getElementById("musicToggle");
 
 // ===== Countdown elements (doivent exister dans le HTML) =====
 const cdDays = document.getElementById("cdDays");
@@ -14,12 +13,6 @@ const cdHours = document.getElementById("cdHours");
 const cdMins = document.getElementById("cdMins");
 const cdSecs = document.getElementById("cdSecs");
 const cdNote = document.getElementById("cdNote");
-
-// ID de ta vidéo (depuis ton lien)
-const YT_ID = "b9v96HD_3_U";
-
-let musicStarted = false;
-let musicMuted = false;
 
 /* =======================
    Wax sound (sans fichier)
@@ -78,18 +71,62 @@ function startMusic() {
     }
 }
 
+const musicToggle = document.getElementById("musicToggle");
+const YT_ID = "b9v96HD_3_U";
+
+let player = null;
+let musicStarted = false;
+let musicMuted = false;
+
+window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player("ytPlayer", {
+        videoId: YT_ID,
+        playerVars: {
+            autoplay: 0,
+            controls: 0,
+            rel: 0,
+            modestbranding: 1,
+            playsinline: 1,
+            loop: 1,
+            playlist: YT_ID,
+        },
+        events: {
+            onReady: () => {
+                // prêt
+            },
+        },
+    });
+};
+
+function startMusic() {
+    if (musicStarted) return;
+    if (!player || !player.playVideo) return;
+
+    player.unMute();
+    player.setVolume(60);
+    player.playVideo();
+
+    musicStarted = true;
+    musicMuted = false;
+
+    if (musicToggle) {
+        musicToggle.classList.add("is-on");
+        musicToggle.textContent = "🔇 Muet";
+        musicToggle.setAttribute("aria-pressed", "false");
+    }
+}
+
 function toggleMusicMute() {
-    if (!musicStarted || !ytAudio || !musicToggle) return;
+    if (!player) return;
 
     if (!musicMuted) {
-        ytAudio.src = ""; // stop
+        player.mute();
         musicMuted = true;
         musicToggle.textContent = "🔊 Son";
         musicToggle.setAttribute("aria-pressed", "true");
     } else {
-        ytAudio.src =
-            `https://www.youtube-nocookie.com/embed/${YT_ID}` +
-            `?autoplay=1&loop=1&playlist=${YT_ID}&controls=0&rel=0&modestbranding=1`;
+        player.unMute();
+        player.playVideo();
         musicMuted = false;
         musicToggle.textContent = "🔇 Muet";
         musicToggle.setAttribute("aria-pressed", "false");
