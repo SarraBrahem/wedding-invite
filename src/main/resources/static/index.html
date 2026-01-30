@@ -55,7 +55,8 @@
             <nav class="mini-nav">
                 <a href="#details">Détails</a>
                 <a href="#lieu">Lieu</a>
-                <a href="#rsvp">RSVP</a>
+                <a href="#rsvp">Un mot pour nous</a>
+                <a href="#photos">Photos</a>
                 <button class="mini-back" id="backBtn" type="button">←</button>
             </nav>
 
@@ -63,6 +64,7 @@
                 <p class="pill">Mariage</p>
                 <h2 class="invite-title">Yasser <span class="amp">&</span> Sarra</h2>
                 <p class="invite-sub">ont la joie de vous inviter à célébrer leur union</p>
+                <p class="hero-quote">“Un moment simple, élégant… et rempli d’amour.”</p>
 
                 <div class="info-grid">
                     <div class="info-card">
@@ -75,18 +77,32 @@
                     </div>
                 </div>
 
-                <p class="small">Tenue : chic & bohème ✨</p>
+                <div class="countdown" aria-label="Compte à rebours">
+                    <div class="cd-item"><span class="cd-num" id="cdDays">--</span><span class="cd-lab">jours</span></div>
+                    <div class="cd-item"><span class="cd-num" id="cdHours">--</span><span class="cd-lab">heures</span></div>
+                    <div class="cd-item"><span class="cd-num" id="cdMins">--</span><span class="cd-lab">min</span></div>
+                    <div class="cd-item"><span class="cd-num" id="cdSecs">--</span><span class="cd-lab">sec</span></div>
+                </div>
+                <p class="tiny muted" id="cdNote">Rendez-vous le 18/04/2026 — Antony</p>
+
             </header>
 
             <section id="details" class="block">
                 <h3 class="h3">Détails</h3>
                 <p class="text">Un “oui” simple, sincère, entouré de ceux que nous aimons.</p>
+                <p class="text">
+                    Nous serions honorés de vous avoir à nos côtés pour célébrer ce moment unique.
+                </p>
                 <ul class="list">
                     <li><strong>Cérémonie civile :</strong> Mairie d’Antony</li>
                     <li><strong>Date :</strong> 18/04/2026</li>
                     <li><strong>Heure :</strong> à préciser</li>
                     <li>Merci d’arriver 10–15 min en avance</li>
                 </ul>
+                <div class="note">
+                    <p class="note-title">Petit mot</p>
+                    <p class="note-text">Merci de confirmer votre présence dès que possible 🤍</p>
+                </div>
             </section>
 
             <section id="lieu" class="block block-alt">
@@ -106,7 +122,7 @@
             </section>
 
             <section id="rsvp" class="block">
-                <h3 class="h3">RSVP</h3>
+                <h3 class="h3">Un mot pour nous</h3>
 
                 <div class="rsvp-box">
                     <p class="text muted">Merci de confirmer votre présence via notre formulaire.</p>
@@ -120,6 +136,28 @@
                         <span class="link-plain">docs.google.com/forms/…</span>
                     </p>
                 </div>
+            </section>
+            <section id="photos" class="block block-alt">
+                <h3 class="h3">Photos du jour 💛</h3>
+                <p class="text muted">Partage tes photos ici, elles seront ajoutées à notre Drive.</p>
+
+                <div class="photo-actions">
+                    <a class="btn btn-primary" target="_blank" rel="noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLScetc-s_Id7lIv1uVrKMfEN2oiZYIBlL9RKlQFSvNwYQlLu8Q/viewform?usp=dialog">
+      📤 Ajouter une photo
+    </a>
+                </div>
+
+                <p class="small muted" style="margin-top:10px;">
+                    Astuce : tu peux envoyer plusieurs photos d’un coup.
+                </p>
+            </section>
+
+            <section id="photos" class="block">
+                <p class="text muted">Quelques souvenirs envoyés par nos invités.</p>
+
+                <div class="gallery" id="gallery"></div>
+
+                <p class="small muted" id="galleryStatus" style="margin-top:10px;"></p>
             </section>
 
             <footer class="footer">
@@ -136,6 +174,7 @@
     <button class="music-floating" id="musicToggle" type="button" aria-pressed="false">
 			🔇 Muet
 		</button>
+    <canvas id="fxCanvas" class="fx-canvas" aria-hidden="true"></canvas>
 
     <script src="script.js"></script>
 
