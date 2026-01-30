@@ -168,13 +168,15 @@
 
     <!-- YouTube audio background (hidden) -->
     <div class="yt-audio" aria-hidden="true">
-        <iframe id="ytAudio" title="Musique mariage" src="" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <div id="ytPlayer"></div>
     </div>
 
     <button class="music-floating" id="musicToggle" type="button" aria-pressed="false">
 			🔇 Muet
 		</button>
     <canvas id="fxCanvas" class="fx-canvas" aria-hidden="true"></canvas>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <script src="script.js"></script>
 

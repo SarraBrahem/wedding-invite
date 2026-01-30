@@ -5,30 +5,24 @@ const screenEnvelope = document.getElementById("screen-envelope");
 const screenInvite = document.getElementById("screen-invite");
 const backBtn = document.getElementById("backBtn");
 
-const ytAudio = document.getElementById("ytAudio");
-const musicToggle = document.getElementById("musicToggle");
-
-// ===== Countdown elements (doivent exister dans le HTML) =====
+// ===== Countdown elements =====
 const cdDays = document.getElementById("cdDays");
 const cdHours = document.getElementById("cdHours");
 const cdMins = document.getElementById("cdMins");
 const cdSecs = document.getElementById("cdSecs");
 const cdNote = document.getElementById("cdNote");
 
-// ID de ta vidéo (depuis ton lien)
-const YT_ID = "b9v96HD_3_U";
-
-let musicStarted = false;
-let musicMuted = false;
-
 /* =======================
-   Wax sound (sans fichier)
+   Wax sound (no file)
    ======================= */
 let audioCtx;
 
 function playWaxPop() {
     try {
         audioCtx = audioCtx || new(window.AudioContext || window.webkitAudioContext)();
+
+        // iOS: parfois l’audio context est "suspended" => resume sur interaction
+        if (audioCtx.state === "suspended") audioCtx.resume();
 
         const t0 = audioCtx.currentTime;
 
@@ -59,14 +53,45 @@ function playWaxPop() {
 }
 
 /* =======================
-   Music (YouTube hidden)
+   Music (YouTube Iframe API)
    ======================= */
-function startMusic() {
-    if (musicStarted || !ytAudio) return;
+const musicToggle = document.getElementById("musicToggle");
+const YT_ID = "b9v96HD_3_U";
 
-    ytAudio.src =
-        `https://www.youtube-nocookie.com/embed/${YT_ID}` +
-        `?autoplay=1&loop=1&playlist=${YT_ID}&controls=0&rel=0&modestbranding=1`;
+let player = null;
+let musicStarted = false;
+let musicMuted = false;
+
+// YouTube API callback
+window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player("ytPlayer", {
+        videoId: YT_ID,
+        playerVars: {
+            autoplay: 0,
+            controls: 0,
+            rel: 0,
+            modestbranding: 1,
+            playsinline: 1,
+            loop: 1,
+            playlist: YT_ID,
+        },
+        events: {
+            onReady: () => {
+                // prêt
+            },
+        },
+    });
+};
+
+function startMusic() {
+    if (musicStarted) return;
+    if (!player || !player.playVideo) return;
+
+    player.unMute();
+    player.setVolume(60);
+
+    // important mobile: playVideo doit venir d’un tap/click utilisateur
+    player.playVideo();
 
     musicStarted = true;
     musicMuted = false;
@@ -79,17 +104,16 @@ function startMusic() {
 }
 
 function toggleMusicMute() {
-    if (!musicStarted || !ytAudio || !musicToggle) return;
+    if (!player || !musicToggle) return;
 
     if (!musicMuted) {
-        ytAudio.src = ""; // stop
+        player.mute();
         musicMuted = true;
         musicToggle.textContent = "🔊 Son";
         musicToggle.setAttribute("aria-pressed", "true");
     } else {
-        ytAudio.src =
-            `https://www.youtube-nocookie.com/embed/${YT_ID}` +
-            `?autoplay=1&loop=1&playlist=${YT_ID}&controls=0&rel=0&modestbranding=1`;
+        player.unMute();
+        player.playVideo();
         musicMuted = false;
         musicToggle.textContent = "🔇 Muet";
         musicToggle.setAttribute("aria-pressed", "false");
@@ -101,7 +125,7 @@ musicToggle.addEventListener("click", toggleMusicMute);
 /* =======================
    Countdown (18/04/2026)
    ======================= */
-// Heure par défaut 14:00 (modifie si tu veux)
+// heure à adapter si tu veux
 const WEDDING_DATE = new Date("2026-04-18T14:00:00+02:00");
 
 function pad2(n) {
@@ -109,7 +133,6 @@ function pad2(n) {
 }
 
 function updateCountdown() {
-    // si les éléments n'existent pas, on ignore sans casser le site
     if (!cdDays || !cdHours || !cdMins || !cdSecs) return;
 
     const now = new Date();
@@ -140,6 +163,63 @@ setInterval(updateCountdown, 1000);
 updateCountdown();
 
 /* =======================
+   Gallery (Apps Script)
+   ======================= */
+const WEB_APP_URL =
+    "https://script.google.com/macros/s/AKfycbzpccJmkE7TpVlGdRtRIjI3qe3NXo9yxSKq_dhGOxOAyhZWda86UNQs9kFvbDzLEWGWhg/exec";
+const GALLERY_KEY = "YS-2026"; // doit matcher SECRET_KEY du script
+
+async function loadGallery() {
+    const gallery = document.getElementById("gallery");
+    const status = document.getElementById("galleryStatus");
+    if (!gallery || !status) return;
+
+    status.textContent = "Chargement des photos…";
+
+    try {
+        const url = `${WEB_APP_URL}?action=list&key=${encodeURIComponent(GALLERY_KEY)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!data.ok) throw new Error(data.error || "Erreur");
+
+        if (data.count === 0) {
+            status.textContent = "Pas encore de photos. Revenez plus tard ✨";
+            return;
+        }
+
+        status.textContent = `${data.count} photo(s) disponible(s).`;
+
+        gallery.innerHTML = data.items
+            .map(
+                (it) => `
+        <div class="gallery-item" data-id="${it.id}" title="${it.name}">
+          <img src="${it.thumb}" alt="${it.name}">
+        </div>
+      `
+            )
+            .join("");
+
+        gallery.addEventListener(
+            "click",
+            (e) => {
+                const card = e.target.closest(".gallery-item");
+                if (!card) return;
+                const id = card.getAttribute("data-id");
+                const fileUrl = `${WEB_APP_URL}?action=file&id=${encodeURIComponent(
+          id
+        )}&key=${encodeURIComponent(GALLERY_KEY)}`;
+                window.open(fileUrl, "_blank");
+            }, { once: true }
+        );
+    } catch (err) {
+        console.error(err);
+        status.textContent =
+            "Impossible de charger la galerie (vérifie l’URL Apps Script + le code secret).";
+    }
+}
+
+/* =======================
    Envelope logic
    ======================= */
 let isOpen = false;
@@ -148,9 +228,9 @@ function openEnvelope() {
     if (isOpen) return;
     isOpen = true;
 
-    // ✅ important: musique + wax au moment du clic (autoplay OK)
-    startMusic();
+    // ✅ tout déclenché par le tap (mobile friendly)
     playWaxPop();
+    startMusicSafe();
     loadGallery();
 
     envelope.classList.add("is-open");
@@ -187,50 +267,12 @@ envelope.addEventListener("keydown", (e) => {
 
 backBtn.addEventListener("click", closeInvite);
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzpccJmkE7TpVlGdRtRIjI3qe3NXo9yxSKq_dhGOxOAyhZWda86UNQs9kFvbDzLEWGWhg/exec";
-const GALLERY_KEY = "YS-2026"; // doit matcher SECRET_KEY du script
-
-async function loadGallery() {
-    const gallery = document.getElementById("gallery");
-    const status = document.getElementById("galleryStatus");
-    if (!gallery || !status) return;
-
-    status.textContent = "Chargement des photos…";
-
-    try {
-        const url = `${WEB_APP_URL}?action=list&key=${encodeURIComponent(GALLERY_KEY)}`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (!data.ok) throw new Error(data.error || "Erreur");
-
-        if (data.count === 0) {
-            status.textContent = "Pas encore de photos. Revenez plus tard ✨";
-            return;
-        }
-
-        status.textContent = `${data.count} photo(s) disponible(s).`;
-
-        gallery.innerHTML = data.items.map(it => `
-      <div class="gallery-item" data-id="${it.id}" title="${it.name}">
-        <img src="${it.thumb}" alt="${it.name}">
-      </div>
-    `).join("");
-
-        // clic -> ouvre l'image via Apps Script (sans partager le Drive)
-        gallery.addEventListener("click", (e) => {
-            const card = e.target.closest(".gallery-item");
-            if (!card) return;
-            const id = card.getAttribute("data-id");
-            const fileUrl = `${WEB_APP_URL}?action=file&id=${encodeURIComponent(id)}&key=${encodeURIComponent(GALLERY_KEY)}`;
-            window.open(fileUrl, "_blank");
-        }, { once: true });
-
-    } catch (err) {
-        console.error(err);
-        status.textContent = "Impossible de charger la galerie (vérifie l’URL Apps Script + le code secret).";
+function startMusicSafe() {
+    if (player && player.playVideo) {
+        startMusic();
+    } else {
+        setTimeout(() => {
+            if (player && player.playVideo) startMusic();
+        }, 200);
     }
 }
-
-// Option: charger la galerie quand l’invitation est affichée
-// (appelle loadGallery() dans openEnvelope() après l’ouverture)
